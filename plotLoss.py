@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import re
 
 
 def load_csv():
@@ -25,6 +26,37 @@ def plot_loss(train_loss, eval_loss):
     plt.show()
 
 
+def parse_data_from_txt(filename):
+    loss = []
+    acc = []
+    val_loss = []
+    val_acc = []
+
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    for line in lines:
+        if "loss" not in line:
+            continue
+
+        splitted_line = re.split(' - ', line.replace('\n', ''))
+
+        for sliced in splitted_line:
+            if sliced.startswith('loss'):
+                loss.append(float(re.findall("\d+\.\d+", sliced)[0]))
+            if sliced.startswith('acc'):
+                acc.append(float(re.findall("\d+\.\d+", sliced)[0]))
+            if sliced.startswith('val_loss'):
+                val_loss.append(float(re.findall("\d+\.\d+", sliced)[0]))
+            if sliced.startswith('val_categorical_accuracy'):
+                val_acc.append(float(re.findall("\d+\.\d+", sliced)[0]))
+
+    return loss, acc, val_loss, val_acc
+
+
 if __name__ == '__main__':
-    train_loss_csv, eval_loss_csv = load_csv()
-    plot_loss(train_loss_csv, eval_loss_csv)
+    l, a, vl, va = parse_data_from_txt("data.txt")
+
+    # train_loss_csv, eval_loss_csv = load_csv()
+    plot_loss(l, vl)
+    plot_loss(a, va)
