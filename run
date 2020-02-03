@@ -1,0 +1,1 @@
+cp dataFromPyCharm.txt data.txt; ./cmd
